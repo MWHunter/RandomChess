@@ -2,16 +2,19 @@ package edu.rockvalleycollege.randomchess
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.RelativeLayout
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+
 
 class MainActivity : AppCompatActivity() {
     private val lastTouchXY = FloatArray(2)
@@ -32,16 +35,36 @@ class MainActivity : AppCompatActivity() {
         val preferences = getSharedPreferences("data", Context.MODE_PRIVATE)
         intInput.setText(preferences.getString("mutations", "32"))
 
+        val database =
+            FirebaseDatabase.getInstance("https://randomchess-8e36c-default-rtdb.firebaseio.com/")
+        val ref = database.getReference("Highscore")
+
         val savePreferences = findViewById<Button>(R.id.savePreference)
         //When you press the “save preferences” button, what we do is to save the contents of
         //the EditText in a variable called “mail” in the preferences file:
         savePreferences.setOnClickListener {
             val editor = preferences.edit()
             editor.putString("mutations", intInput.text.toString())
+            ref.setValue(intInput.text.toString())
+
             editor.commit()
             //the finish method of the AppCompatActivity class ends the current activity
             // finish()
         }
+
+        val highScore = findViewById<TextView>(R.id.highScore)
+
+
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                highScore.text = "Global highscore: ${snapshot.value}"
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w("Message", "Failed to read value.", error.toException())
+            }
+        })
 
 
         val chessBoard = findViewById<ImageView>(R.id.chessBoard)
@@ -92,7 +115,8 @@ class MainActivity : AppCompatActivity() {
                         // Offset to get images to the bottom of squares
                         clickedPiece2.y = (chessBoard.y + (ySquareClicked * squareHeight)) + 15
 
-                        pieceType[getIndex(xSquareClicked2, ySquareClicked2)] = pieceType[getIndex(xSquareClicked, ySquareClicked)]
+                        pieceType[getIndex(xSquareClicked2, ySquareClicked2)] =
+                            pieceType[getIndex(xSquareClicked, ySquareClicked)]
                         pieceType[getIndex(xSquareClicked, ySquareClicked)] = null
                         pieces[getIndex(xSquareClicked2, ySquareClicked2)] = clickedPiece2
                         pieces[getIndex(xSquareClicked, ySquareClicked)] = null
