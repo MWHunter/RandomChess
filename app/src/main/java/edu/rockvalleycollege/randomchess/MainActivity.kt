@@ -2,12 +2,14 @@ package edu.rockvalleycollege.randomchess
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.firebase.database.DataSnapshot
@@ -78,7 +80,6 @@ class MainActivity : AppCompatActivity() {
                 lastTouchXY[1] = event.y
             }
 
-            v.performClick()
             false
         }
 
@@ -100,35 +101,38 @@ class MainActivity : AppCompatActivity() {
             var parentLinearLayout: ConstraintLayout? = null
             parentLinearLayout = findViewById(R.id.mainLayout)
 
+            for (move in highlightedMoves) {
+                parentLinearLayout.removeView(move)
+            }
+
+            highlightedMoves.clear()
+
             for (move in highlightedSquares) {
                 if (move[0] == xSquareClicked && move[1] == ySquareClicked) {
                     val x2 = lastLastTouchXY[0]
                     val y2 = lastLastTouchXY[1]
 
-                    val xSquareClicked2 = (x2 / width * 8).toInt()
-                    val ySquareClicked2 = (y2 / height * 8).toInt()
+                    val xLastClicked = (x2 / width * 8).toInt()
+                    val yLastClicked = (y2 / height * 8).toInt()
 
-                    val clickedPiece2 = pieces[getIndex(xSquareClicked2, ySquareClicked2)]
+                    val clickedPiece2 = pieces[getIndex(xLastClicked, yLastClicked)]
 
                     if (clickedPiece2 != null) {
                         clickedPiece2.x = (chessBoard.x + (xSquareClicked * squareWidth))
                         // Offset to get images to the bottom of squares
                         clickedPiece2.y = (chessBoard.y + (ySquareClicked * squareHeight)) + 15
 
-                        pieceType[getIndex(xSquareClicked2, ySquareClicked2)] =
-                            pieceType[getIndex(xSquareClicked, ySquareClicked)]
-                        pieceType[getIndex(xSquareClicked, ySquareClicked)] = null
-                        pieces[getIndex(xSquareClicked2, ySquareClicked2)] = clickedPiece2
-                        pieces[getIndex(xSquareClicked, ySquareClicked)] = null
+                        pieceType[getIndex(xSquareClicked, ySquareClicked)] = pieceType[getIndex(xLastClicked, yLastClicked)]
+                        pieceType[getIndex(xLastClicked, yLastClicked)] = null
+                        pieces[getIndex(xSquareClicked, ySquareClicked)] = clickedPiece2
+                        pieces[getIndex(xLastClicked, yLastClicked)] = null
+
+                        highlightedSquares.clear()
+                        return@setOnClickListener
                     }
                 }
             }
 
-            for (move in highlightedMoves) {
-                parentLinearLayout.removeView(move)
-            }
-
-            highlightedMoves.clear()
             if (clickedPiece != null) {
                 val resource = resources.getIdentifier("highlight", "drawable", packageName)
 
@@ -199,6 +203,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun getPossibleMoves(x: Int, y: Int): ArrayList<Array<Int>> {
         val moves = arrayListOf<Array<Int>>()
         val piece = pieceType[getIndex(x, y)]
@@ -221,7 +226,31 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(x, y + 1))
                 }
             }
+
+            "rook", "rook1" -> {
+                var tempX = x
+                while (inBounds(++tempX, y) && pieces[getIndex(tempX, y)] == null) {
+                    moves.add(arrayOf(tempX, y))
+                }
+
+                tempX = x
+                while (inBounds(--tempX, y) && pieces[getIndex(tempX, y)] == null) {
+                    moves.add(arrayOf(tempX, y))
+                }
+
+                var tempY = y
+                while (inBounds(x, ++tempY) && pieces[getIndex(x, tempY)] == null) {
+                    moves.add(arrayOf(x, tempY))
+                }
+
+                tempY = y
+                while (inBounds(x, --tempY) && pieces[getIndex(x, tempY)] == null) {
+                    moves.add(arrayOf(x, tempY))
+                }
+            }
         }
+
+        moves.removeIf {arr -> !inBounds(arr[0], arr[1])}
 
         return moves
     }
@@ -251,6 +280,12 @@ class MainActivity : AppCompatActivity() {
 
         pieces[getIndex(x, y)] = imageView
         pieceType[getIndex(x, y)] = name
+    }
+
+    fun inBounds(x: Int, y: Int): Boolean {
+        if (x < 0 || x > 7) return false
+        if (y < 0 || y > 7) return false
+        return true
     }
 
     fun getIndex(x: Int, y: Int): Int {
