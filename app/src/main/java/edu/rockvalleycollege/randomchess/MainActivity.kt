@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     var highlightedSquares = arrayListOf<Array<Int>>()
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,7 +159,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         start.setOnClickListener() {
+            val parentLinearLayout = findViewById<ConstraintLayout?>(R.id.mainLayout)
+
+            for (piece in pieces) {
+                parentLinearLayout?.removeView(piece)
+            }
+
             pieces = arrayOfNulls<ImageView?>(64)
+            pieceType = arrayOfNulls(64)
+            highlightedMoves = arrayListOf()
+            highlightedSquares = arrayListOf()
 
             createPiece(0, 0, "rook1")
             createPiece(1, 0, "knight1")
