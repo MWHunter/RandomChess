@@ -258,6 +258,103 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(x, tempY))
                 }
             }
+
+            "knight", "knight1" -> {
+                moves.add(arrayOf(x + 1, y + 2))
+                moves.add(arrayOf(x + 2, y + 1))
+                moves.add(arrayOf(x + 2, y - 1))
+                moves.add(arrayOf(x + 1, y - 2))
+                moves.add(arrayOf(x - 1, y - 2))
+                moves.add(arrayOf(x - 2, y - 1))
+                moves.add(arrayOf(x - 2, y + 1))
+                moves.add(arrayOf(x - 1, y + 2))
+            }
+
+            "bishop", "bishop1" -> {
+                var tempX = x
+                var tempY = y
+                while (inBounds(++tempX, ++tempY) && pieces[getIndex(tempX, tempY)] == null) {
+                    moves.add(arrayOf(tempX, tempY))
+                }
+
+                tempX = x
+                tempY = y
+                while (inBounds(++tempX, --tempY) && pieces[getIndex(tempX, tempY)] == null) {
+                    moves.add(arrayOf(tempX, tempY))
+                }
+
+                tempX = x
+                tempY = y
+                while (inBounds(--tempX, ++tempY) && pieces[getIndex(tempX, tempY)] == null) {
+                    moves.add(arrayOf(tempX, tempY))
+                }
+
+                tempX = x
+                tempY = y
+                while (inBounds(--tempX, --tempY) && pieces[getIndex(tempX, tempY)] == null) {
+                    moves.add(arrayOf(tempX, tempY))
+                }
+            }
+
+            "queen", "queen1" -> {
+                var tempX = x
+                while (inBounds(++tempX, y) && pieces[getIndex(tempX, y)] == null) {
+                    moves.add(arrayOf(tempX, y))
+                }
+
+                tempX = x
+                while (inBounds(--tempX, y) && pieces[getIndex(tempX, y)] == null) {
+                    moves.add(arrayOf(tempX, y))
+                }
+
+                var tempY = y
+                while (inBounds(x, ++tempY) && pieces[getIndex(x, tempY)] == null) {
+                    moves.add(arrayOf(x, tempY))
+                }
+
+                tempY = y
+                while (inBounds(x, --tempY) && pieces[getIndex(x, tempY)] == null) {
+                    moves.add(arrayOf(x, tempY))
+                }
+
+                tempX = x
+                tempY = y
+                while (inBounds(++tempX, ++tempY) && pieces[getIndex(tempX, tempY)] == null) {
+                    moves.add(arrayOf(tempX, tempY))
+                }
+
+                tempX = x
+                tempY = y
+                while (inBounds(++tempX, --tempY) && pieces[getIndex(tempX, tempY)] == null) {
+                    moves.add(arrayOf(tempX, tempY))
+                }
+
+                tempX = x
+                tempY = y
+                while (inBounds(--tempX, ++tempY) && pieces[getIndex(tempX, tempY)] == null) {
+                    moves.add(arrayOf(tempX, tempY))
+                }
+
+                tempX = x
+                tempY = y
+                while (inBounds(--tempX, --tempY) && pieces[getIndex(tempX, tempY)] == null) {
+                    moves.add(arrayOf(tempX, tempY))
+                }
+            }
+
+            "king", "king1" -> {
+                moves.add(arrayOf(x, y + 1))
+                moves.add(arrayOf(x, y))
+                moves.add(arrayOf(x, y - 1))
+
+                moves.add(arrayOf(x + 1, y + 1))
+                moves.add(arrayOf(x + 1, y))
+                moves.add(arrayOf(x + 1, y - 1))
+
+                moves.add(arrayOf(x - 1, y + 1))
+                moves.add(arrayOf(x - 1, y))
+                moves.add(arrayOf(x - 1, y - 1))
+            }
         }
 
         moves.removeIf {arr -> !inBounds(arr[0], arr[1])}
