@@ -165,6 +165,10 @@ class MainActivity : AppCompatActivity() {
                 parentLinearLayout?.removeView(piece)
             }
 
+            for (move in highlightedMoves) {
+                parentLinearLayout?.removeView(move)
+            }
+
             pieces = arrayOfNulls<ImageView?>(64)
             pieceType = arrayOfNulls(64)
             highlightedMoves = arrayListOf()
