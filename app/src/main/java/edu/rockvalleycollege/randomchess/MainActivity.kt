@@ -123,7 +123,8 @@ class MainActivity : AppCompatActivity() {
                         // Offset to get images to the bottom of squares
                         clickedPiece2.y = (chessBoard.y + (ySquareClicked * squareHeight)) + 15
 
-                        pieceType[getIndex(xSquareClicked, ySquareClicked)] = pieceType[getIndex(xLastClicked, yLastClicked)]
+                        pieceType[getIndex(xSquareClicked, ySquareClicked)] =
+                            pieceType[getIndex(xLastClicked, yLastClicked)]
                         pieceType[getIndex(xLastClicked, yLastClicked)] = null
                         pieces[getIndex(xSquareClicked, ySquareClicked)] = clickedPiece2
                         pieces[getIndex(xLastClicked, yLastClicked)] = null
@@ -225,19 +226,27 @@ class MainActivity : AppCompatActivity() {
         when (piece) {
             "pawn" -> {
                 if (y == 6) {
-                    moves.add(arrayOf(x, y - 1))
-                    moves.add(arrayOf(x, y - 2))
+                    if (pieceType[getIndex(x, y - 1)] == null) {
+                        moves.add(arrayOf(x, y - 1))
+                        if (pieceType[getIndex(x, y - 2)] == null)
+                            moves.add(arrayOf(x, y - 2))
+                    }
                 } else {
-                    moves.add(arrayOf(x, y - 1))
-
+                    if (pieceType[getIndex(x, y - 1)] == null)
+                        moves.add(arrayOf(x, y - 1))
                 }
             }
             "pawn1" -> {
                 if (y == 1) {
-                    moves.add(arrayOf(x, y + 1))
-                    moves.add(arrayOf(x, y + 2))
+                    if (pieceType[getIndex(x, y + 1)] == null) {
+                        moves.add(arrayOf(x, y + 1))
+                        if (pieceType[getIndex(x, y + 2)] == null)
+                            moves.add(arrayOf(x, y + 2))
+                    }
+
                 } else {
-                    moves.add(arrayOf(x, y + 1))
+                    if (pieceType[getIndex(x, y + 1)] == null)
+                        moves.add(arrayOf(x, y + 1))
                 }
             }
 
@@ -247,9 +256,23 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(tempX, y))
                 }
 
+                if (inBounds(tempX, y)) {
+                    val last = pieceType[getIndex(tempX, y)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, y))
+                    }
+                }
+
                 tempX = x
                 while (inBounds(--tempX, y) && pieces[getIndex(tempX, y)] == null) {
                     moves.add(arrayOf(tempX, y))
+                }
+
+                if (inBounds(tempX, y)) {
+                    val last = pieceType[getIndex(tempX, y)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, y))
+                    }
                 }
 
                 var tempY = y
@@ -257,9 +280,23 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(x, tempY))
                 }
 
+                if (inBounds(x, tempY)) {
+                    val last = pieceType[getIndex(x, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(x, tempY))
+                    }
+                }
+
                 tempY = y
                 while (inBounds(x, --tempY) && pieces[getIndex(x, tempY)] == null) {
                     moves.add(arrayOf(x, tempY))
+                }
+
+                if (inBounds(x, tempY)) {
+                    val last = pieceType[getIndex(x, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(x, tempY))
+                    }
                 }
             }
 
@@ -281,10 +318,24 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(tempX, tempY))
                 }
 
+                if (inBounds(tempX, tempY)) {
+                    val last = pieceType[getIndex(tempX, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, tempY))
+                    }
+                }
+
                 tempX = x
                 tempY = y
                 while (inBounds(++tempX, --tempY) && pieces[getIndex(tempX, tempY)] == null) {
                     moves.add(arrayOf(tempX, tempY))
+                }
+
+                if (inBounds(tempX, tempY)) {
+                    val last = pieceType[getIndex(tempX, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, tempY))
+                    }
                 }
 
                 tempX = x
@@ -293,10 +344,24 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(tempX, tempY))
                 }
 
+                if (inBounds(tempX, tempY)) {
+                    val last = pieceType[getIndex(tempX, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, tempY))
+                    }
+                }
+
                 tempX = x
                 tempY = y
                 while (inBounds(--tempX, --tempY) && pieces[getIndex(tempX, tempY)] == null) {
                     moves.add(arrayOf(tempX, tempY))
+                }
+
+                if (inBounds(tempX, tempY)) {
+                    val last = pieceType[getIndex(tempX, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, tempY))
+                    }
                 }
             }
 
@@ -306,9 +371,23 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(tempX, y))
                 }
 
+                if (inBounds(tempX, y)) {
+                    val last = pieceType[getIndex(tempX, y)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, y))
+                    }
+                }
+
                 tempX = x
                 while (inBounds(--tempX, y) && pieces[getIndex(tempX, y)] == null) {
                     moves.add(arrayOf(tempX, y))
+                }
+
+                if (inBounds(tempX, y)) {
+                    val last = pieceType[getIndex(tempX, y)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, y))
+                    }
                 }
 
                 var tempY = y
@@ -316,9 +395,23 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(x, tempY))
                 }
 
+                if (inBounds(x, tempY)) {
+                    val last = pieceType[getIndex(x, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(x, tempY))
+                    }
+                }
+
                 tempY = y
                 while (inBounds(x, --tempY) && pieces[getIndex(x, tempY)] == null) {
                     moves.add(arrayOf(x, tempY))
+                }
+
+                if (inBounds(x, tempY)) {
+                    val last = pieceType[getIndex(x, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(x, tempY))
+                    }
                 }
 
                 tempX = x
@@ -327,10 +420,24 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(tempX, tempY))
                 }
 
+                if (inBounds(tempX, tempY)) {
+                    val last = pieceType[getIndex(tempX, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, tempY))
+                    }
+                }
+
                 tempX = x
                 tempY = y
                 while (inBounds(++tempX, --tempY) && pieces[getIndex(tempX, tempY)] == null) {
                     moves.add(arrayOf(tempX, tempY))
+                }
+
+                if (inBounds(tempX, tempY)) {
+                    val last = pieceType[getIndex(tempX, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, tempY))
+                    }
                 }
 
                 tempX = x
@@ -339,10 +446,24 @@ class MainActivity : AppCompatActivity() {
                     moves.add(arrayOf(tempX, tempY))
                 }
 
+                if (inBounds(tempX, tempY)) {
+                    val last = pieceType[getIndex(tempX, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, tempY))
+                    }
+                }
+
                 tempX = x
                 tempY = y
                 while (inBounds(--tempX, --tempY) && pieces[getIndex(tempX, tempY)] == null) {
                     moves.add(arrayOf(tempX, tempY))
+                }
+
+                if (inBounds(tempX, tempY)) {
+                    val last = pieceType[getIndex(tempX, tempY)]
+                    if (last != null && last.endsWith('1') != piece.endsWith('1')) {
+                        moves.add(arrayOf(tempX, tempY))
+                    }
                 }
             }
 
@@ -361,7 +482,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        moves.removeIf {arr -> !inBounds(arr[0], arr[1])}
+        moves.removeIf { arr -> !inBounds(arr[0], arr[1]) }
+
+        val isWhite = piece != null && piece.endsWith('1')
+
+        moves.removeIf { index ->
+            val referencedPiece = pieceType[getIndex(index[0], index[1])]
+            return@removeIf referencedPiece != null && referencedPiece.isNotEmpty() && (referencedPiece.endsWith(
+                '1'
+            ) == isWhite)
+        }
 
         return moves
     }
