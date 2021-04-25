@@ -126,14 +126,24 @@ class MainActivity : AppCompatActivity() {
                         // Remove the captured piece from the board
                         parentLinearLayout.removeView(pieces[getIndex(xSquareClicked, ySquareClicked)])
 
-                        pieceType[getIndex(xSquareClicked, ySquareClicked)] =
-                            pieceType[getIndex(xLastClicked, yLastClicked)]
+                        pieceType[getIndex(xSquareClicked, ySquareClicked)] = pieceType[getIndex(xLastClicked, yLastClicked)]
                         pieceType[getIndex(xLastClicked, yLastClicked)] = null
                         pieces[getIndex(xSquareClicked, ySquareClicked)] = clickedPiece2
                         pieces[getIndex(xLastClicked, yLastClicked)] = null
 
                         highlightedSquares.clear()
 
+                        if (pieceType[getIndex(xSquareClicked, ySquareClicked)] == "pawn" && ySquareClicked == 0) {
+                            parentLinearLayout.removeView(pieces[getIndex(xSquareClicked, ySquareClicked)])
+
+                            createPiece(xSquareClicked, ySquareClicked, "queen")
+                        }
+
+                        if (pieceType[getIndex(xSquareClicked, ySquareClicked)] == "pawn1" && ySquareClicked == 8) {
+                            parentLinearLayout.removeView(pieces[getIndex(xSquareClicked, ySquareClicked)])
+
+                            createPiece(xSquareClicked, ySquareClicked, "queen1")
+                        }
 
                         return@setOnClickListener
                     }
