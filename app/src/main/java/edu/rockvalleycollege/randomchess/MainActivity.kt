@@ -123,6 +123,9 @@ class MainActivity : AppCompatActivity() {
                         // Offset to get images to the bottom of squares
                         clickedPiece2.y = (chessBoard.y + (ySquareClicked * squareHeight)) + 15
 
+                        // Remove the captured piece from the board
+                        parentLinearLayout.removeView(pieces[getIndex(xSquareClicked, ySquareClicked)])
+
                         pieceType[getIndex(xSquareClicked, ySquareClicked)] =
                             pieceType[getIndex(xLastClicked, yLastClicked)]
                         pieceType[getIndex(xLastClicked, yLastClicked)] = null
@@ -130,6 +133,8 @@ class MainActivity : AppCompatActivity() {
                         pieces[getIndex(xLastClicked, yLastClicked)] = null
 
                         highlightedSquares.clear()
+
+
                         return@setOnClickListener
                     }
                 }
