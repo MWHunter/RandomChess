@@ -235,6 +235,12 @@ class MainActivity : AppCompatActivity() {
                     if (pieceType[getIndex(x, y - 1)] == null)
                         moves.add(arrayOf(x, y - 1))
                 }
+
+                if (inBounds(x - 1, y - 1) && pieceType[getIndex(x - 1, y - 1)] != null)
+                    moves.add(arrayOf(x - 1, y - 1))
+
+                if (inBounds(x + 1, y - 1) && pieceType[getIndex(x + 1, y - 1)] != null)
+                    moves.add(arrayOf(x + 1, y - 1))
             }
             "pawn1" -> {
                 if (y == 1) {
@@ -248,6 +254,12 @@ class MainActivity : AppCompatActivity() {
                     if (pieceType[getIndex(x, y + 1)] == null)
                         moves.add(arrayOf(x, y + 1))
                 }
+
+                if (inBounds(x - 1, y + 1) && pieceType[getIndex(x - 1, y + 1)] != null)
+                    moves.add(arrayOf(x - 1, y - 1))
+
+                if (inBounds(x + 1, y + 1) && pieceType[getIndex(x + 1, y + 1)] != null)
+                    moves.add(arrayOf(x + 1, y - 1))
             }
 
             "rook", "rook1" -> {
