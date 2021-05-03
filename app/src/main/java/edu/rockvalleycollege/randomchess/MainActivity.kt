@@ -145,7 +145,9 @@ class MainActivity : AppCompatActivity() {
                             createPiece(xSquareClicked, ySquareClicked, "queen1")
                         }
 
-                        return@setOnClickListener
+                        makeComputerMove(false)
+
+                return@setOnClickListener
                     }
                 }
             }
@@ -230,6 +232,70 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(android.R.id.content).setOnTouchListener { _, _ ->
             hideKeyboard()
             false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun makeComputerMove(isWhite: Boolean) {
+        val xValues = IntRange(0, 7).toMutableList()
+        val yValues = IntRange(0, 7).toMutableList()
+
+        xValues.shuffle()
+        yValues.shuffle()
+
+        for (x in xValues) {
+            for (y in yValues) {
+                val selectedType = pieceType[getIndex(x, y)]
+                if (selectedType != null) {
+                    if (selectedType.endsWith("1") != isWhite) {
+                        val moves = getPossibleMoves(x, y)
+                        moves.shuffle()
+
+                        if (moves.isNotEmpty()) {
+                            val move = moves[0]
+                            val clickedPiece2 = pieces[getIndex(x, y)] ?: return
+
+                            val chessBoard = findViewById<ImageView>(R.id.chessBoard)
+                            var parentLinearLayout: ConstraintLayout? = null
+                            parentLinearLayout = findViewById(R.id.mainLayout)
+
+                            val width = chessBoard.width
+                            val height = chessBoard.height
+
+                            val squareWidth = width / 8
+                            val squareHeight = height / 8
+
+                            // This is impossible
+                            clickedPiece2.x = (chessBoard.x + (move[0] * squareWidth))
+                            // Offset to get images to the bottom of squares
+                            clickedPiece2.y = (chessBoard.y + (move[1] * squareHeight)) + 15
+
+                            // Remove the captured piece from the board
+                            //parentLinearLayout.removeView(clickedPiece2)
+
+                            pieceType[getIndex(move[0], move[1])] = pieceType[getIndex(x, y)]
+                            pieceType[getIndex(x, y)] = null
+                            pieces[getIndex(move[0], move[1])] = clickedPiece2
+                            pieces[getIndex(x, y)] = null
+
+
+                            if (pieceType[getIndex(x, y)] == "pawn" && y == 0) {
+                                parentLinearLayout.removeView(pieces[getIndex(move[0], move[1])])
+
+                                createPiece(x, y, "queen")
+                            }
+
+                            if (pieceType[getIndex(move[0], move[1])] == "pawn1" && move[1] == 8) {
+                                parentLinearLayout.removeView(pieces[getIndex(move[0], move[1])])
+
+                                createPiece(x, y, "queen1")
+                            }
+
+                            return
+                        }
+                    }
+                }
+            }
         }
     }
 
