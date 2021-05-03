@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             val editor = preferences.edit()
             editor.putString("mutations", intInput.text.toString())
             ref.setValue(intInput.text.toString())
-            mutations = Integer.getInteger(intInput.text.toString())
+            mutations = Integer.parseInt(intInput.text.toString())
 
             editor.commit()
             //the finish method of the AppCompatActivity class ends the current activity
@@ -263,12 +263,12 @@ class MainActivity : AppCompatActivity() {
 
             val timer = object : CountDownTimer(120000, 1000) {
                 override fun onFinish() {
-                    val score = findViewById<TextView>(R.id.highScore)
+                    val score = findViewById<TextView>(R.id.currentScore)
                     score.text = "You ran out of time!!"
                 }
 
                 override fun onTick(millisUntilFinished: Long) {
-                    val score = findViewById<TextView>(R.id.highScore)
+                    val score = findViewById<TextView>(R.id.currentScore)
                     score.text = "Score: ${millisUntilFinished / 1000}"
                 }
             }
@@ -292,62 +292,79 @@ class MainActivity : AppCompatActivity() {
         xValues.shuffle()
         yValues.shuffle()
 
-        for (x in xValues) {
-            for (y in yValues) {
-                val selectedType = pieceType[getIndex(x, y)]
-                if (selectedType != null) {
-                    if (selectedType.endsWith("1") != isWhite) {
-                        val moves = getPossibleMoves(x, y)
-                        moves.shuffle()
+        for (take in 0..1) {
+            for (x in xValues) {
+                for (y in yValues) {
+                    val selectedType = pieceType[getIndex(x, y)]
+                    if (selectedType != null) {
+                        if (selectedType.endsWith("1") != isWhite) {
+                            val moves = getPossibleMoves(x, y)
+                            moves.shuffle()
 
-                        if (moves.isNotEmpty()) {
-                            val move = moves[0]
-                            val clickedPiece2 = pieces[getIndex(x, y)] ?: return
+                            for (move in moves) {
+                                val clickedPiece2 = pieces[getIndex(x, y)] ?: continue
 
-                            val chessBoard = findViewById<ImageView>(R.id.chessBoard)
-                            var parentLinearLayout: ConstraintLayout? = null
-                            parentLinearLayout = findViewById(R.id.mainLayout)
+                                val chessBoard = findViewById<ImageView>(R.id.chessBoard)
+                                var parentLinearLayout: ConstraintLayout? = null
+                                parentLinearLayout = findViewById(R.id.mainLayout)
 
-                            val width = chessBoard.width
-                            val height = chessBoard.height
+                                val width = chessBoard.width
+                                val height = chessBoard.height
 
-                            val squareWidth = width / 8
-                            val squareHeight = height / 8
+                                val squareWidth = width / 8
+                                val squareHeight = height / 8
 
-                            // This is impossible
-                            clickedPiece2.x = (chessBoard.x + (move[0] * squareWidth))
-                            // Offset to get images to the bottom of squares
-                            clickedPiece2.y = (chessBoard.y + (move[1] * squareHeight)) + 15
+                                if (take == 0 && pieceType[getIndex(move[0], move[1])] == null) continue
 
-                            val capturedPiece = pieces[getIndex(move[0], move[1])]
 
-                            if (pieceType[getIndex(move[0], move[1])] == "king") {
-                                val score = findViewById<TextView>(R.id.highScore)
-                                score.text = "YOU LOST!"
+                                clickedPiece2.x = (chessBoard.x + (move[0] * squareWidth))
+                                // Offset to get images to the bottom of squares
+                                clickedPiece2.y = (chessBoard.y + (move[1] * squareHeight)) + 15
+
+                                val capturedPiece = pieces[getIndex(move[0], move[1])]
+
+                                if (pieceType[getIndex(move[0], move[1])] == "king") {
+                                    val score = findViewById<TextView>(R.id.highScore)
+                                    score.text = "YOU LOST!"
+                                }
+
+                                // Remove the captured piece from the board
+                                parentLinearLayout.removeView(capturedPiece)
+
+                                pieceType[getIndex(move[0], move[1])] = pieceType[getIndex(x, y)]
+                                pieceType[getIndex(x, y)] = null
+                                pieces[getIndex(move[0], move[1])] = clickedPiece2
+                                pieces[getIndex(x, y)] = null
+
+
+                                if (pieceType[getIndex(x, y)] == "pawn" && y == 0) {
+                                    parentLinearLayout.removeView(
+                                        pieces[getIndex(
+                                            move[0],
+                                            move[1]
+                                        )]
+                                    )
+
+                                    createPiece(x, y, "queen")
+                                }
+
+                                if (pieceType[getIndex(
+                                        move[0],
+                                        move[1]
+                                    )] == "pawn1" && move[1] == 8
+                                ) {
+                                    parentLinearLayout.removeView(
+                                        pieces[getIndex(
+                                            move[0],
+                                            move[1]
+                                        )]
+                                    )
+
+                                    createPiece(x, y, "queen1")
+                                }
+
+                                return
                             }
-
-                            // Remove the captured piece from the board
-                            parentLinearLayout.removeView(capturedPiece)
-
-                            pieceType[getIndex(move[0], move[1])] = pieceType[getIndex(x, y)]
-                            pieceType[getIndex(x, y)] = null
-                            pieces[getIndex(move[0], move[1])] = clickedPiece2
-                            pieces[getIndex(x, y)] = null
-
-
-                            if (pieceType[getIndex(x, y)] == "pawn" && y == 0) {
-                                parentLinearLayout.removeView(pieces[getIndex(move[0], move[1])])
-
-                                createPiece(x, y, "queen")
-                            }
-
-                            if (pieceType[getIndex(move[0], move[1])] == "pawn1" && move[1] == 8) {
-                                parentLinearLayout.removeView(pieces[getIndex(move[0], move[1])])
-
-                                createPiece(x, y, "queen1")
-                            }
-
-                            return
                         }
                     }
                 }
