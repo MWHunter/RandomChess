@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     var highlightedMoves = arrayListOf<ImageView>()
     var highlightedSquares = arrayListOf<Array<Int>>()
 
+    var mutations = 32
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("ClickableViewAccessibility")
@@ -49,6 +52,7 @@ class MainActivity : AppCompatActivity() {
             val editor = preferences.edit()
             editor.putString("mutations", intInput.text.toString())
             ref.setValue(intInput.text.toString())
+            mutations = Integer.getInteger(intInput.text.toString())
 
             editor.commit()
             //the finish method of the AppCompatActivity class ends the current activity
@@ -124,30 +128,54 @@ class MainActivity : AppCompatActivity() {
                         clickedPiece2.y = (chessBoard.y + (ySquareClicked * squareHeight)) + 15
 
                         // Remove the captured piece from the board
-                        parentLinearLayout.removeView(pieces[getIndex(xSquareClicked, ySquareClicked)])
+                        parentLinearLayout.removeView(
+                            pieces[getIndex(
+                                xSquareClicked,
+                                ySquareClicked
+                            )]
+                        )
 
-                        pieceType[getIndex(xSquareClicked, ySquareClicked)] = pieceType[getIndex(xLastClicked, yLastClicked)]
+                        pieceType[getIndex(xSquareClicked, ySquareClicked)] =
+                            pieceType[getIndex(xLastClicked, yLastClicked)]
                         pieceType[getIndex(xLastClicked, yLastClicked)] = null
                         pieces[getIndex(xSquareClicked, ySquareClicked)] = clickedPiece2
                         pieces[getIndex(xLastClicked, yLastClicked)] = null
 
                         highlightedSquares.clear()
 
-                        if (pieceType[getIndex(xSquareClicked, ySquareClicked)] == "pawn" && ySquareClicked == 0) {
-                            parentLinearLayout.removeView(pieces[getIndex(xSquareClicked, ySquareClicked)])
+                        if (pieceType[getIndex(
+                                xSquareClicked,
+                                ySquareClicked
+                            )] == "pawn" && ySquareClicked == 0
+                        ) {
+                            parentLinearLayout.removeView(
+                                pieces[getIndex(
+                                    xSquareClicked,
+                                    ySquareClicked
+                                )]
+                            )
 
                             createPiece(xSquareClicked, ySquareClicked, "queen")
                         }
 
-                        if (pieceType[getIndex(xSquareClicked, ySquareClicked)] == "pawn1" && ySquareClicked == 8) {
-                            parentLinearLayout.removeView(pieces[getIndex(xSquareClicked, ySquareClicked)])
+                        if (pieceType[getIndex(
+                                xSquareClicked,
+                                ySquareClicked
+                            )] == "pawn1" && ySquareClicked == 8
+                        ) {
+                            parentLinearLayout.removeView(
+                                pieces[getIndex(
+                                    xSquareClicked,
+                                    ySquareClicked
+                                )]
+                            )
 
                             createPiece(xSquareClicked, ySquareClicked, "queen1")
                         }
 
                         makeComputerMove(false)
 
-                return@setOnClickListener
+                        return@setOnClickListener
                     }
                 }
             }
@@ -227,13 +255,34 @@ class MainActivity : AppCompatActivity() {
             createPiece(5, 7, "bishop")
             createPiece(6, 7, "knight")
             createPiece(7, 7, "rook")
+
+            for (i in 1..mutations) {
+                makeComputerMove(true)
+                makeComputerMove(false)
+            }
+
+            val timer = object : CountDownTimer(120000, 1000) {
+                override fun onFinish() {
+                    val score = findViewById<TextView>(R.id.highScore)
+                    score.text = "You ran out of time!!"
+                }
+
+                override fun onTick(millisUntilFinished: Long) {
+                    val score = findViewById<TextView>(R.id.highScore)
+                    score.text = "Score: ${millisUntilFinished / 1000}"
+                }
+            }
+
+            timer.start()
         }
+
 
         findViewById<View>(android.R.id.content).setOnTouchListener { _, _ ->
             hideKeyboard()
             false
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun makeComputerMove(isWhite: Boolean) {
@@ -270,8 +319,15 @@ class MainActivity : AppCompatActivity() {
                             // Offset to get images to the bottom of squares
                             clickedPiece2.y = (chessBoard.y + (move[1] * squareHeight)) + 15
 
+                            val capturedPiece = pieces[getIndex(move[0], move[1])]
+
+                            if (pieceType[getIndex(move[0], move[1])] == "king") {
+                                val score = findViewById<TextView>(R.id.highScore)
+                                score.text = "YOU LOST!"
+                            }
+
                             // Remove the captured piece from the board
-                            //parentLinearLayout.removeView(clickedPiece2)
+                            parentLinearLayout.removeView(capturedPiece)
 
                             pieceType[getIndex(move[0], move[1])] = pieceType[getIndex(x, y)]
                             pieceType[getIndex(x, y)] = null
