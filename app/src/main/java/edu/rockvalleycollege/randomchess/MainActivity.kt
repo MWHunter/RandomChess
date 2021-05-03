@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     var highlightedMoves = arrayListOf<ImageView>()
     var highlightedSquares = arrayListOf<Array<Int>>()
 
-    var mutations = 32
+    var mutations = 10
 
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -39,7 +39,8 @@ class MainActivity : AppCompatActivity() {
 
         val intInput = findViewById<EditText>(R.id.mutations)
         val preferences = getSharedPreferences("data", Context.MODE_PRIVATE)
-        intInput.setText(preferences.getString("mutations", "32"))
+        intInput.setText(preferences.getString("mutations", "10"))
+        mutations = Integer.parseInt(preferences.getString("mutations", "10"))
 
         val database =
             FirebaseDatabase.getInstance("https://randomchess-8e36c-default-rtdb.firebaseio.com/")
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         //the EditText in a variable called “mail” in the preferences file:
         savePreferences.setOnClickListener {
             val editor = preferences.edit()
-            editor.putString("mutations", intInput.text.toString())
+            editor.putString("mutations", Integer.parseInt(intInput.text.toString()).toString())
             ref.setValue(intInput.text.toString())
             mutations = Integer.parseInt(intInput.text.toString())
 
@@ -182,6 +183,8 @@ class MainActivity : AppCompatActivity() {
 
             if (clickedPiece != null) {
                 val resource = resources.getIdentifier("highlight", "drawable", packageName)
+
+                if (pieceType[getIndex(xSquareClicked, ySquareClicked)] == null || pieceType[getIndex(xSquareClicked, ySquareClicked)]!!.endsWith("1")) return@setOnClickListener
 
                 val possibleMoves = getPossibleMoves(xSquareClicked, ySquareClicked)
 
