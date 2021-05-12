@@ -322,6 +322,8 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun makeComputerMove(isWhite: Boolean, allowKingCapture : Boolean) {
+        if (isFinished) return
+
         val xValues = IntRange(0, 7).toMutableList()
         val yValues = IntRange(0, 7).toMutableList()
 
@@ -352,17 +354,17 @@ class MainActivity : AppCompatActivity() {
 
                                 if (take == 0 && pieceType[getIndex(move[0], move[1])] == null) continue
 
+                                // Don't allow the king to be captured before the game begins
+                                if (!allowKingCapture && pieceType[getIndex(move[0], move[1])]?.contains("king") == true) {
+                                    return
+                                }
+
 
                                 clickedPiece2.x = (chessBoard.x + (move[0] * squareWidth))
                                 // Offset to get images to the bottom of squares
                                 clickedPiece2.y = (chessBoard.y + (move[1] * squareHeight)) + 15
 
                                 val capturedPiece = pieces[getIndex(move[0], move[1])]
-
-                                // Don't allow the king to be captured before the game begins
-                                if (!allowKingCapture && pieceType[getIndex(move[0], move[1])]?.contains("king") == true) {
-                                    return
-                                }
 
                                 if (pieceType[getIndex(move[0], move[1])] == "king") {
                                     val score = findViewById<TextView>(R.id.currentScore)
