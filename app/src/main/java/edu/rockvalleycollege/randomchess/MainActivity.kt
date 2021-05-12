@@ -439,10 +439,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 if (inBounds(x - 1, y + 1) && pieceType[getIndex(x - 1, y + 1)] != null)
-                    moves.add(arrayOf(x - 1, y - 1))
+                    moves.add(arrayOf(x - 1, y + 1))
 
                 if (inBounds(x + 1, y + 1) && pieceType[getIndex(x + 1, y + 1)] != null)
-                    moves.add(arrayOf(x + 1, y - 1))
+                    moves.add(arrayOf(x + 1, y + 1))
             }
 
             "rook", "rook1" -> {

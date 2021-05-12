@@ -37,11 +37,11 @@
 
     <Button
         android:id="@+id/savePreference"
-        android:layout_width="125dp"
-        android:layout_height="46dp"
+        android:layout_width="136dp"
+        android:layout_height="56dp"
         android:layout_marginEnd="61dp"
         android:layout_marginBottom="15dp"
-        android:text="Save"
+        android:text="Save Mutations"
         app:layout_constraintBottom_toTopOf="@+id/chessBoard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/mutations"
