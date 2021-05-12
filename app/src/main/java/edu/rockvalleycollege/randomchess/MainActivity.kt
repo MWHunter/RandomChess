@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     var mutations = 10
     var currentScore = 0
+    var highScore = 0
 
     var isFinished = false
 
@@ -66,12 +67,13 @@ class MainActivity : AppCompatActivity() {
             // finish()
         }
 
-        val highScore = findViewById<TextView>(R.id.highScore)
+        val highScoreText = findViewById<TextView>(R.id.highScore)
 
 
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                highScore.text = "Global highscore: ${snapshot.value}"
+                highScore = (snapshot.value as Long).toInt()
+                highScoreText.text = "Global highscore: ${snapshot.value}"
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -287,6 +289,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onFinish() {
                     val score = findViewById<TextView>(R.id.currentScore)
                     score.text = "You ran out of time!!"
+
+                    isFinished = true
                 }
 
                 override fun onTick(millisUntilFinished: Long) {
@@ -316,7 +320,9 @@ class MainActivity : AppCompatActivity() {
 
 
     fun trySetHighScore() {
-        ref.setValue(currentScore)
+        if (currentScore > highScore) {
+            ref.setValue(currentScore)
+        }
     }
 
 
@@ -425,13 +431,13 @@ class MainActivity : AppCompatActivity() {
         when (piece) {
             "pawn" -> {
                 if (y == 6) {
-                    if (pieceType[getIndex(x, y - 1)] == null) {
+                    if (inBounds(x, y - 1) && pieceType[getIndex(x, y - 1)] == null) {
                         moves.add(arrayOf(x, y - 1))
-                        if (pieceType[getIndex(x, y - 2)] == null)
+                        if (inBounds(x, y - 2) && pieceType[getIndex(x, y - 2)] == null)
                             moves.add(arrayOf(x, y - 2))
                     }
                 } else {
-                    if (pieceType[getIndex(x, y - 1)] == null)
+                    if (inBounds(x, y - 2) && inBounds(x, y + 1) && pieceType[getIndex(x, y - 1)] == null)
                         moves.add(arrayOf(x, y - 1))
                 }
 
