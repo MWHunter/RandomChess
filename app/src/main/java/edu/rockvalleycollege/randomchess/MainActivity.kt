@@ -23,12 +23,16 @@ class MainActivity : AppCompatActivity() {
     private val lastTouchXY = FloatArray(2)
     private var lastLastTouchXY = FloatArray(2)
 
+    val database = FirebaseDatabase.getInstance("https://randomchess-8e36c-default-rtdb.firebaseio.com/")
+    val ref = database.getReference("Highscore")
+
     var pieces = arrayOfNulls<ImageView?>(64)
     var pieceType = arrayOfNulls<String>(64)
     var highlightedMoves = arrayListOf<ImageView>()
     var highlightedSquares = arrayListOf<Array<Int>>()
 
     var mutations = 10
+    var currentScore = 0
 
     var isFinished = false
 
@@ -48,9 +52,6 @@ class MainActivity : AppCompatActivity() {
         intInput.setText(preferences.getString("mutations", "10"))
         mutations = Integer.parseInt(preferences.getString("mutations", "10"))
 
-        val database =
-            FirebaseDatabase.getInstance("https://randomchess-8e36c-default-rtdb.firebaseio.com/")
-        val ref = database.getReference("Highscore")
 
         val savePreferences = findViewById<Button>(R.id.savePreference)
         //When you press the “save preferences” button, what we do is to save the contents of
@@ -58,7 +59,6 @@ class MainActivity : AppCompatActivity() {
         savePreferences.setOnClickListener {
             val editor = preferences.edit()
             editor.putString("mutations", Integer.parseInt(intInput.text.toString()).toString())
-            ref.setValue(intInput.text.toString())
             mutations = Integer.parseInt(intInput.text.toString())
 
             editor.commit()
@@ -139,6 +139,8 @@ class MainActivity : AppCompatActivity() {
                         if (pieceType[getIndex(move[0], move[1])] == "king1") {
                             val score = findViewById<TextView>(R.id.currentScore)
                             score.text = "YOU WON!"
+
+                            trySetHighScore()
 
                             isFinished = true
                         }
@@ -293,6 +295,8 @@ class MainActivity : AppCompatActivity() {
                         return
                     }
 
+                    currentScore = (millisUntilFinished / 1000).toInt()
+
                     val score = findViewById<TextView>(R.id.currentScore)
                     score.text = "Score: ${millisUntilFinished / 1000}"
                 }
@@ -308,6 +312,11 @@ class MainActivity : AppCompatActivity() {
             hideKeyboard()
             false
         }
+    }
+
+
+    fun trySetHighScore() {
+        ref.setValue(currentScore)
     }
 
 
@@ -359,7 +368,7 @@ class MainActivity : AppCompatActivity() {
 
                                 if (pieceType[getIndex(move[0], move[1])] == "king1") {
                                     val score = findViewById<TextView>(R.id.currentScore)
-                                    score.text = "YOU WON!"
+                                    score.text = "YOU WON WITHOUT PLAYING!"
 
                                     isFinished = true
                                 }
