@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
 
     var mutations = 10
 
+    var isFinished = false
+
     var timer = object : CountDownTimer(120000, 1000) {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {}
@@ -94,6 +96,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         chessBoard.setOnClickListener {
+            if (isFinished) return@setOnClickListener
+
             val x = lastTouchXY[0]
             val y = lastTouchXY[1]
 
@@ -277,12 +281,19 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onTick(millisUntilFinished: Long) {
+                    if (isFinished) {
+                        cancel()
+                        return
+                    }
+
                     val score = findViewById<TextView>(R.id.currentScore)
                     score.text = "Score: ${millisUntilFinished / 1000}"
                 }
             }
 
             timer.start()
+
+            isFinished = false
         }
 
 
@@ -333,8 +344,17 @@ class MainActivity : AppCompatActivity() {
                                 val capturedPiece = pieces[getIndex(move[0], move[1])]
 
                                 if (pieceType[getIndex(move[0], move[1])] == "king") {
-                                    val score = findViewById<TextView>(R.id.highScore)
+                                    val score = findViewById<TextView>(R.id.currentScore)
                                     score.text = "YOU LOST!"
+
+                                    isFinished = true
+                                }
+
+                                if (pieceType[getIndex(move[0], move[1])] == "king1") {
+                                    val score = findViewById<TextView>(R.id.currentScore)
+                                    score.text = "YOU WON!"
+
+                                    isFinished = true
                                 }
 
                                 // Remove the captured piece from the board
