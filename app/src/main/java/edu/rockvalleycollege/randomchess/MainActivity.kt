@@ -136,6 +136,13 @@ class MainActivity : AppCompatActivity() {
                         // Offset to get images to the bottom of squares
                         clickedPiece2.y = (chessBoard.y + (ySquareClicked * squareHeight)) + 15
 
+                        if (pieceType[getIndex(move[0], move[1])] == "king1") {
+                            val score = findViewById<TextView>(R.id.currentScore)
+                            score.text = "YOU WON!"
+
+                            isFinished = true
+                        }
+
                         // Remove the captured piece from the board
                         parentLinearLayout.removeView(
                             pieces[getIndex(
