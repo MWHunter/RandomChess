@@ -30,6 +30,10 @@ class MainActivity : AppCompatActivity() {
 
     var mutations = 10
 
+    var timer = object : CountDownTimer(120000, 1000) {
+        override fun onTick(millisUntilFinished: Long) {}
+        override fun onFinish() {}
+    }
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("ClickableViewAccessibility")
@@ -264,7 +268,9 @@ class MainActivity : AppCompatActivity() {
                 makeComputerMove(false)
             }
 
-            val timer = object : CountDownTimer(120000, 1000) {
+            timer.cancel()
+
+            timer = object : CountDownTimer(120000, 1000) {
                 override fun onFinish() {
                     val score = findViewById<TextView>(R.id.currentScore)
                     score.text = "You ran out of time!!"
