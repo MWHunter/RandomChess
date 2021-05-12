@@ -191,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                             createPiece(xSquareClicked, ySquareClicked, "queen1")
                         }
 
-                        makeComputerMove(false)
+                        makeComputerMove(false, true)
 
                         return@setOnClickListener
                     }
@@ -277,8 +277,8 @@ class MainActivity : AppCompatActivity() {
             createPiece(7, 7, "rook")
 
             for (i in 1..mutations) {
-                makeComputerMove(true)
-                makeComputerMove(false)
+                makeComputerMove(true, false)
+                makeComputerMove(false, false)
             }
 
             timer.cancel()
@@ -321,7 +321,7 @@ class MainActivity : AppCompatActivity() {
 
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun makeComputerMove(isWhite: Boolean) {
+    fun makeComputerMove(isWhite: Boolean, allowKingCapture : Boolean) {
         val xValues = IntRange(0, 7).toMutableList()
         val yValues = IntRange(0, 7).toMutableList()
 
@@ -359,16 +359,14 @@ class MainActivity : AppCompatActivity() {
 
                                 val capturedPiece = pieces[getIndex(move[0], move[1])]
 
+                                // Don't allow the king to be captured before the game begins
+                                if (!allowKingCapture && pieceType[getIndex(move[0], move[1])]?.contains("king") == true) {
+                                    return
+                                }
+
                                 if (pieceType[getIndex(move[0], move[1])] == "king") {
                                     val score = findViewById<TextView>(R.id.currentScore)
                                     score.text = "YOU LOST!"
-
-                                    isFinished = true
-                                }
-
-                                if (pieceType[getIndex(move[0], move[1])] == "king1") {
-                                    val score = findViewById<TextView>(R.id.currentScore)
-                                    score.text = "YOU WON WITHOUT PLAYING!"
 
                                     isFinished = true
                                 }
@@ -443,14 +441,14 @@ class MainActivity : AppCompatActivity() {
             }
             "pawn1" -> {
                 if (y == 1) {
-                    if (pieceType[getIndex(x, y + 1)] == null) {
+                    if (inBounds(x, y + 1) && pieceType[getIndex(x, y + 1)] == null) {
                         moves.add(arrayOf(x, y + 1))
-                        if (pieceType[getIndex(x, y + 2)] == null)
+                        if (inBounds(x, y + 2) && pieceType[getIndex(x, y + 2)] == null)
                             moves.add(arrayOf(x, y + 2))
                     }
 
                 } else {
-                    if (pieceType[getIndex(x, y + 1)] == null)
+                    if (inBounds(x, y + 1) && pieceType[getIndex(x, y + 1)] == null)
                         moves.add(arrayOf(x, y + 1))
                 }
 
